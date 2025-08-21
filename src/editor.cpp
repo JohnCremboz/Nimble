@@ -73,7 +73,13 @@ void Editor::helpPrompt() {
     echo();
     curs_set(1);
     std::string help = translations[lang].count("helptxt") ? translations[lang]["helptxt"] : "Sneltoetsen: Ctrl+O Opslaan | Ctrl+X Afsluiten | Ctrl+W Zoeken | Ctrl+R Vervangen | Ctrl+Z Undo | Ctrl+Y Redo | PgUp/PgDn Scroll | Ctrl+G Sluiten";
-    mvprintw(maxY-2, 0, "%s", help.c_str());
+    mvprintw(maxY-6, 0, "%s", help.c_str());
+    mvprintw(maxY-5, 0, "Plugin-ondersteuning: plaats .so/.dll in ./plugins, interface zie README");
+    mvprintw(maxY-4, 0, "Voorbeeldplugin: plugins/example_plugin.cpp");
+    // About-scherm
+    std::string about = "Nimble Editor v0.01  Auteur: JohnCremboz";
+    mvprintw(maxY-2, 0, "%s", about.c_str());
+    mvprintw(maxY-1, 0, "Druk op een toets om te sluiten / Press any key to close");
     getch();
     noecho();
     curs_set(0);

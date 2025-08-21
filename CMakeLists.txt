@@ -1,3 +1,5 @@
+add_library(example_plugin SHARED plugins/example_plugin.cpp src/plugin.h)
+set_target_properties(example_plugin PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins)
 cmake_minimum_required(VERSION 3.10)
 project(NimbleNanoEditor LANGUAGES CXX)
 

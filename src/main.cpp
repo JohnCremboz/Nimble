@@ -1,3 +1,4 @@
+#include "pluginmanager.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -186,6 +187,8 @@ std::string chooseLanguage() {
 }
 
 int main(int argc, char* argv[]) {
+    PluginManager pluginManager;
+    pluginManager.loadPlugins();
     initscr();
     cbreak();
     noecho();
@@ -265,6 +268,7 @@ int main(int argc, char* argv[]) {
 
     delwin(browserWin);
     delwin(editorWin);
+    pluginManager.unloadPlugins();
     endwin();
     return 0;
 }
