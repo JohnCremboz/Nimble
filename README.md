@@ -1,6 +1,11 @@
-# Nimble Editor v1.0
+# Nimble Editor v.0.01
+Auteur: JohnCremboz
+
+## Overzicht
 
 Een lichtgewicht, meertalige, terminal-gebaseerde teksteditor in C++ met bestandsbrowser, thema's, voorkeuren, aanpasbare sneltoetsen en een krachtig plugin-systeem.
+
+
 ## Features
 - Openen, bewerken en opslaan van tekstbestanden
 - Navigatie met pijltjestoetsen, PageUp/PageDown
@@ -247,43 +252,4 @@ public:
 
    ### License
    GPL-3.0
-   MIT
-
-
-## Sneltoetsen (standaard, aanpasbaar via keybindings.json)
-- **Ctrl+S**: Opslaan
-- **Ctrl+X**: Afsluiten
-- **Ctrl+F**: Zoeken
-- **Ctrl+R**: Vervangen
-- **Ctrl+Z**: Undo
-- **Ctrl+Y**: Redo
-- **Ctrl+H**: Help/About
-- **Tab**: Wissel focus tussen editor en browser
-- **Esc**: Sluit de app
-
-
-## Installatie & Build
-1. Vereisten: C++17, ncurses, CMake
-2. Build:
-   ```sh
-   mkdir build
-   cd build
-   cmake ..
-   cmake --build .
-   ```
-3. Start de app:
-   ```sh
-   ./nimble
-   ```
-
-
-## Voorkeuren & Configuratie
-- Bij het opstarten worden taal en thema automatisch geladen uit `preferences.json`.
-- Pas taal/thema aan via het voorkeurenscherm (wordt direct opgeslagen).
-- Sneltoetsen zijn aanpasbaar via `keybindings.json`.
-## About/Help
-Druk op **Ctrl+H** voor een help- en aboutscherm met sneltoetsen, versie en auteur.
-
-
-## Licentie
-MIT
+   
