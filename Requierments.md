@@ -8,14 +8,13 @@
 
 ## 1. Functionele Vereisten
 
-### Basiseditor
-- [x] Openen, bewerken en opslaan van tekstbestanden.
+- [x] Openen, bewerken en opslaan (Ctrl+S) van tekstbestanden.
 - [x] Navigatie met pijltjestoetsen, pagina omhoog/omlaag.
-- [x] Tekst invoegen, verwijderen en overschrijven.
-- [x] Zoeken en vervangen.
-- [x] Undo/redo.
+- [x] Tekst invoegen, verwijderen en overschrijven (Insert).
+- [x] Zoeken (Ctrl+F) en vervangen (Ctrl+R).
+- [x] Undo (Ctrl+Z) / Redo (Ctrl+Y).
 - [x] Statusbalk met bestandsinfo en cursorpositie.
-- [x] Sneltoetsen (Ctrl+O, Ctrl+X, enz.).
+- [x] Sneltoetsen (Ctrl+S, Ctrl+X, Ctrl+F, Ctrl+R, Ctrl+Z, Ctrl+Y, Ctrl+H).
 
 ### Bestandsbeheer
 - [x] Openen van bestanden via command-line argumenten.

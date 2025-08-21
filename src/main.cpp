@@ -1,3 +1,76 @@
+#include <vector>
+#include <utility>
+
+struct Theme {
+    std::string name;
+    short fg;
+    short bg;
+    short keyword;
+    short stringc;
+};
+
+std::vector<Theme> themes = {
+    {"Default", COLOR_WHITE, -1, COLOR_CYAN, COLOR_YELLOW},
+    {"Solarized Light", COLOR_BLACK, COLOR_YELLOW, COLOR_BLUE, COLOR_RED},
+    {"Solarized Dark", COLOR_WHITE, COLOR_BLUE, COLOR_CYAN, COLOR_YELLOW},
+    {"Monokai", COLOR_WHITE, COLOR_MAGENTA, COLOR_GREEN, COLOR_YELLOW},
+    {"Dracula", COLOR_WHITE, COLOR_MAGENTA, COLOR_CYAN, COLOR_YELLOW},
+    {"Gruvbox", COLOR_WHITE, COLOR_RED, COLOR_YELLOW, COLOR_GREEN},
+    {"Nord", COLOR_WHITE, COLOR_BLUE, COLOR_CYAN, COLOR_MAGENTA},
+    {"One Dark", COLOR_WHITE, COLOR_BLUE, COLOR_CYAN, COLOR_YELLOW},
+    {"Tomorrow Night", COLOR_WHITE, COLOR_BLACK, COLOR_CYAN, COLOR_YELLOW},
+    {"PaperColor", COLOR_BLACK, COLOR_WHITE, COLOR_BLUE, COLOR_RED},
+    {"Cobalt2", COLOR_WHITE, COLOR_BLUE, COLOR_YELLOW, COLOR_CYAN}
+};
+
+int showPreferences(std::string& lang, int& themeIdx) {
+    clear();
+    int choice = 0;
+    int maxY, maxX;
+    getmaxyx(stdscr, maxY, maxX);
+    int selLang = 0;
+    int selTheme = themeIdx;
+    std::vector<std::string> langs = {"nl", "en", "fr", "de", "es"};
+    std::vector<std::string> langLabels = {"Nederlands", "English", "Français", "Deutsch", "Español"};
+    bool inLang = true;
+    while (true) {
+        clear();
+        mvprintw(0, 0, "Voorkeuren / Preferences");
+        mvprintw(2, 2, inLang ? "> Taal / Language:" : "  Taal / Language:");
+        for (size_t i = 0; i < langLabels.size(); ++i) {
+            if (inLang && (int)i == selLang) attron(A_REVERSE);
+            mvprintw(3 + i, 6, "%s", langLabels[i].c_str());
+            if (inLang && (int)i == selLang) attroff(A_REVERSE);
+        }
+        mvprintw(10, 2, !inLang ? "> Thema / Theme:" : "  Thema / Theme:");
+        for (size_t i = 0; i < themes.size(); ++i) {
+            if (!inLang && (int)i == selTheme) attron(A_REVERSE);
+            mvprintw(11 + i, 6, "%s", themes[i].name.c_str());
+            if (!inLang && (int)i == selTheme) attroff(A_REVERSE);
+        }
+        mvprintw(maxY-2, 2, "Enter: selecteer / select | Tab: wissel | Esc: annuleer");
+        refresh();
+        int c = getch();
+        if (c == 9) { // Tab
+            inLang = !inLang;
+        } else if (c == KEY_UP) {
+            if (inLang && selLang > 0) selLang--;
+            else if (!inLang && selTheme > 0) selTheme--;
+        } else if (c == KEY_DOWN) {
+            if (inLang && selLang + 1 < (int)langs.size()) selLang++;
+            else if (!inLang && selTheme + 1 < (int)themes.size()) selTheme++;
+        } else if (c == 10) { // Enter
+            if (inLang) {
+                lang = langs[selLang];
+            } else {
+                themeIdx = selTheme;
+                return 1;
+            }
+        } else if (c == 27) {
+            return 0;
+        }
+    }
+}
 #include "editor.h"
 #include "filebrowser.h"
 #include <ncurses.h>
@@ -10,70 +83,70 @@ std::map<std::string, std::map<std::string, std::string>> translations = {
         {"open", "Open"},
         {"directory", "Directory"},
         {"tabtip", "Tab: switch | Esc: quit"},
-        {"file", "File"},
-        {"pos", "Pos"},
-        {"help", "Ctrl+G Help"},
-        {"search", "/Search: "},
-        {"replace", "/Replace: "},
-        {"replacewith", "/Replace with: "},
-        {"helptxt", "Shortcuts: Ctrl+O Save | Ctrl+X Exit | Ctrl+W Search | Ctrl+R Replace | Ctrl+Z Undo | Ctrl+Y Redo | PgUp/PgDn Scroll | Ctrl+G Close"},
-        {"unsaved", "Unsaved changes! Press y to save, n to ignore."}
+    {"file", "File"},
+    {"pos", "Pos"},
+    {"help", "Ctrl+H Help"},
+    {"search", "/Search: "},
+    {"replace", "/Replace: "},
+    {"replacewith", "/Replace with: "},
+    {"helptxt", "Shortcuts: Ctrl+S Save | Ctrl+X Exit | Ctrl+F Search | Ctrl+R Replace | Ctrl+Z Undo | Ctrl+Y Redo | Ctrl+H Help | PgUp/PgDn Scroll"},
+    {"unsaved", "Unsaved changes! Press y to save, n to ignore."}
     }},
     {"fr", {
         {"filebrowser", "Explorateur de fichiers:"},
         {"open", "Ouvrir"},
         {"directory", "Dossier"},
         {"tabtip", "Tab: changer | Esc: quitter"},
-        {"file", "Fichier"},
-        {"pos", "Pos"},
-        {"help", "Ctrl+G Aide"},
-        {"search", "/Rechercher: "},
-        {"replace", "/Remplacer: "},
-        {"replacewith", "/Remplacer par: "},
-        {"helptxt", "Raccourcis: Ctrl+O Sauver | Ctrl+X Quitter | Ctrl+W Rechercher | Ctrl+R Remplacer | Ctrl+Z Annuler | Ctrl+Y Rétablir | PgUp/PgDn Défilement | Ctrl+G Fermer"},
-        {"unsaved", "Modifications non enregistrées ! Appuyez sur y pour sauvegarder, n pour ignorer."}
+    {"file", "Fichier"},
+    {"pos", "Pos"},
+    {"help", "Ctrl+H Aide"},
+    {"search", "/Rechercher: "},
+    {"replace", "/Remplacer: "},
+    {"replacewith", "/Remplacer par: "},
+    {"helptxt", "Raccourcis: Ctrl+S Sauver | Ctrl+X Quitter | Ctrl+F Rechercher | Ctrl+R Remplacer | Ctrl+Z Annuler | Ctrl+Y Rétablir | Ctrl+H Aide | PgUp/PgDn Défilement"},
+    {"unsaved", "Modifications non enregistrées ! Appuyez sur y pour sauvegarder, n pour ignorer."}
     }},
     {"nl", {
         {"filebrowser", "Bestandsbrowser:"},
         {"open", "Openen"},
         {"directory", "Map"},
         {"tabtip", "Tab: wissel | Esc: sluit af"},
-        {"file", "Bestand"},
-        {"pos", "Pos"},
-        {"help", "Ctrl+G Help"},
-        {"search", "/Zoeken: "},
-        {"replace", "/Vervang: "},
-        {"replacewith", "/Vervang door: "},
-        {"helptxt", "Sneltoetsen: Ctrl+O Opslaan | Ctrl+X Afsluiten | Ctrl+W Zoeken | Ctrl+R Vervangen | Ctrl+Z Undo | Ctrl+Y Redo | PgUp/PgDn Scroll | Ctrl+G Sluiten"},
-        {"unsaved", "Niet-opgeslagen wijzigingen! Druk op y om op te slaan, n om te negeren."}
+    {"file", "Bestand"},
+    {"pos", "Pos"},
+    {"help", "Ctrl+H Help"},
+    {"search", "/Zoeken: "},
+    {"replace", "/Vervang: "},
+    {"replacewith", "/Vervang door: "},
+    {"helptxt", "Sneltoetsen: Ctrl+S Opslaan | Ctrl+X Afsluiten | Ctrl+F Zoeken | Ctrl+R Vervangen | Ctrl+Z Undo | Ctrl+Y Redo | Ctrl+H Help | PgUp/PgDn Scroll"},
+    {"unsaved", "Niet-opgeslagen wijzigingen! Druk op y om op te slaan, n om te negeren."}
     }},
     {"de", {
         {"filebrowser", "Dateibrowser:"},
         {"open", "Öffnen"},
         {"directory", "Verzeichnis"},
         {"tabtip", "Tab: wechseln | Esc: beenden"},
-        {"file", "Datei"},
-        {"pos", "Pos"},
-        {"help", "Ctrl+G Hilfe"},
-        {"search", "/Suchen: "},
-        {"replace", "/Ersetzen: "},
-        {"replacewith", "/Ersetzen durch: "},
-        {"helptxt", "Shortcuts: Ctrl+O Speichern | Ctrl+X Beenden | Ctrl+W Suchen | Ctrl+R Ersetzen | Ctrl+Z Rückgängig | Ctrl+Y Wiederholen | PgUp/PgDn Scrollen | Ctrl+G Schließen"},
-        {"unsaved", "Nicht gespeicherte Änderungen! Drücken Sie y zum Speichern, n zum Ignorieren."}
+    {"file", "Datei"},
+    {"pos", "Pos"},
+    {"help", "Ctrl+H Hilfe"},
+    {"search", "/Suchen: "},
+    {"replace", "/Ersetzen: "},
+    {"replacewith", "/Ersetzen durch: "},
+    {"helptxt", "Shortcuts: Ctrl+S Speichern | Ctrl+X Beenden | Ctrl+F Suchen | Ctrl+R Ersetzen | Ctrl+Z Rückgängig | Ctrl+Y Wiederholen | Ctrl+H Hilfe | PgUp/PgDn Scrollen"},
+    {"unsaved", "Nicht gespeicherte Änderungen! Drücken Sie y zum Speichern, n zum Ignorieren."}
     }},
     {"es", {
         {"filebrowser", "Explorador de archivos:"},
         {"open", "Abrir"},
         {"directory", "Directorio"},
         {"tabtip", "Tab: cambiar | Esc: salir"},
-        {"file", "Archivo"},
-        {"pos", "Pos"},
-        {"help", "Ctrl+G Ayuda"},
-        {"search", "/Buscar: "},
-        {"replace", "/Reemplazar: "},
-        {"replacewith", "/Reemplazar por: "},
-        {"helptxt", "Atajos: Ctrl+O Guardar | Ctrl+X Salir | Ctrl+W Buscar | Ctrl+R Reemplazar | Ctrl+Z Deshacer | Ctrl+Y Rehacer | PgUp/PgDn Desplazar | Ctrl+G Cerrar"},
-        {"unsaved", "¡Cambios no guardados! Pulsa y para guardar, n para ignorar."}
+    {"file", "Archivo"},
+    {"pos", "Pos"},
+    {"help", "Ctrl+H Ayuda"},
+    {"search", "/Buscar: "},
+    {"replace", "/Reemplazar: "},
+    {"replacewith", "/Reemplazar por: "},
+    {"helptxt", "Atajos: Ctrl+S Guardar | Ctrl+X Salir | Ctrl+F Buscar | Ctrl+R Reemplazar | Ctrl+Z Deshacer | Ctrl+Y Rehacer | Ctrl+H Ayuda | PgUp/PgDn Desplazar"},
+    {"unsaved", "¡Cambios no guardados! Pulsa y para guardar, n para ignorar."}
     }}
 };
 
@@ -103,7 +176,10 @@ int main(int argc, char* argv[]) {
     noecho();
     keypad(stdscr, TRUE);
 
-    std::string lang = chooseLanguage();
+    std::string lang = "en";
+    int themeIdx = 0;
+    // Voorkeurenscherm tonen
+    showPreferences(lang, themeIdx);
 
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);
@@ -112,7 +188,7 @@ int main(int argc, char* argv[]) {
     WINDOW* editorWin = newwin(maxY, maxX - splitCol, 0, splitCol);
 
     FileBrowser browser;
-    Editor editor(lang);
+    Editor editor(lang, themeIdx);
     std::string fileToOpen;
     bool running = true;
     bool focusEditor = true;

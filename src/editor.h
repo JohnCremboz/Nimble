@@ -5,7 +5,7 @@
 
 class Editor {
 public:
-    Editor(const std::string& lang = "en");
+    Editor(const std::string& lang = "en", int themeIdx = 0);
     void run();
     bool openFile(const std::string& path);
     bool saveFile(const std::string& path = "");
@@ -13,7 +13,6 @@ public:
     void replace(const std::string& term, const std::string& replacement, bool all = false);
     void undo();
     void redo();
-private:
     std::string filename;
     std::vector<std::string> lines;
     int cursorX = 0;
@@ -29,4 +28,5 @@ private:
     void replacePrompt();
     void helpPrompt();
     std::string lang;
+    int themeIdx = 0;
 };

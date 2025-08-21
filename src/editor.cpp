@@ -8,9 +8,11 @@
 #include <map>
 #include <string>
 
-extern std::map<std::string, std::map<std::string, std::string>> translations;
 
-Editor::Editor(const std::string& l) : lang(l) {}
+extern std::map<std::string, std::map<std::string, std::string>> translations;
+extern std::vector<Theme> themes;
+
+Editor::Editor(const std::string& l, int tIdx) : lang(l), themeIdx(tIdx) {}
 
 void Editor::undo() {
     if (!undoStack.empty()) {
@@ -173,11 +175,15 @@ void Editor::draw() {
     }
     // Init kleuren voor highlighting
     start_color();
-    init_pair(1, COLOR_CYAN, -1); // keywords
-    init_pair(2, COLOR_YELLOW, -1); // strings
+    Theme& th = themes[themeIdx];
+    init_pair(1, th.keyword, th.bg); // keywords
+    init_pair(2, th.stringc, th.bg); // strings
+    init_pair(3, th.fg, th.bg); // gewone tekst
     std::vector<std::string> keywords = {"int","float","double","if","else","for","while","return","void","class","public","private","protected","include","define","namespace","using","std"};
     for (size_t i = 0; i < lines.size() && i < (size_t)maxY - 1; ++i) {
+        attron(COLOR_PAIR(3));
         mvprintw(i, 0, "%*zu ", linenoWidth, i + 1);
+        attroff(COLOR_PAIR(3));
         int x = linenoWidth + 1;
         std::string line = lines[i];
         size_t pos = 0;
@@ -206,7 +212,9 @@ void Editor::draw() {
                 }
             }
             if (!matched) {
+                attron(COLOR_PAIR(3));
                 mvaddch(i, x++, line[pos++]);
+                attroff(COLOR_PAIR(3));
             }
         }
     }
