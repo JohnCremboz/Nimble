@@ -1,0 +1,10 @@
+{
+  "save": "ctrl+s",
+  "open": "ctrl+o",
+  "exit": "ctrl+x",
+  "search": "ctrl+f",
+  "replace": "ctrl+r",
+  "undo": "ctrl+z",
+  "redo": "ctrl+y",
+  "help": "ctrl+h"
+}

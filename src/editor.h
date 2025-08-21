@@ -1,3 +1,7 @@
+#include <map>
+#include <string>
+    std::map<std::string, int> keymap;
+    void loadKeybindings(const std::string& path = "keybindings.json");
 
 #pragma once
 #include <string>

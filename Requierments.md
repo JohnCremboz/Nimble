@@ -6,7 +6,10 @@
 
 ---
 
+
 ## 1. Functionele Vereisten
+
+- [x] Voorkeurenscherm voor taal- en themakeuze bij opstarten.
 
 - [x] Openen, bewerken en opslaan (Ctrl+S) van tekstbestanden.
 - [x] Navigatie met pijltjestoetsen, pagina omhoog/omlaag.
@@ -65,8 +68,9 @@
 
 ## 5. Stretch Goals (Optioneel)
 
-- [ ] Syntax highlighting.
+- [x] Syntax highlighting.
 - [x] Lijnnummering.
 - [ ] Aanpasbare keybindings.
 - [ ] Plugin-ondersteuning.
-- [ ] Split-screen voor file browser + editor.
+- [x] Split-screen voor file browser + editor.
+- [x] Thema's (kleurenschema's) en voorkeurenscherm.

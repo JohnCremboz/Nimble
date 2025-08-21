@@ -1,3 +1,6 @@
+#include <fstream>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 #include <vector>
 #include <utility>
 
@@ -62,8 +65,20 @@ int showPreferences(std::string& lang, int& themeIdx) {
         } else if (c == 10) { // Enter
             if (inLang) {
                 lang = langs[selLang];
+                // Sla direct op
+                json j;
+                j["language"] = lang;
+                j["theme"] = themeIdx;
+                std::ofstream pf("preferences.json");
+                if (pf.is_open()) pf << j.dump(4);
             } else {
                 themeIdx = selTheme;
+                // Sla direct op
+                json j;
+                j["language"] = lang;
+                j["theme"] = themeIdx;
+                std::ofstream pf("preferences.json");
+                if (pf.is_open()) pf << j.dump(4);
                 return 1;
             }
         } else if (c == 27) {
@@ -178,8 +193,14 @@ int main(int argc, char* argv[]) {
 
     std::string lang = "en";
     int themeIdx = 0;
-    // Voorkeurenscherm tonen
-    showPreferences(lang, themeIdx);
+    // Laad voorkeuren uit preferences.json
+    std::ifstream pf("preferences.json");
+    if (pf.is_open()) {
+        json j;
+        pf >> j;
+        if (j.contains("language")) lang = j["language"].get<std::string>();
+        if (j.contains("theme")) themeIdx = j["theme"].get<int>();
+    }
 
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);

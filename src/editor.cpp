@@ -1,3 +1,27 @@
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <string>
+#include <cctype>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+void Editor::loadKeybindings(const std::string& path) {
+    keymap.clear();
+    std::ifstream f(path);
+    if (!f.is_open()) return;
+    json j;
+    f >> j;
+    auto parse = [](const std::string& s) -> int {
+        if (s.rfind("ctrl+", 0) == 0 && s.size() == 6) {
+            char c = std::tolower(s[5]);
+            return c - 'a' + 1;
+        }
+        return 0;
+    };
+    for (auto& [action, key]: j.items()) {
+        keymap[action] = parse(key.get<std::string>());
+    }
+}
 
 #include "editor.h"
 #include <ncurses.h>
@@ -274,11 +298,12 @@ void Editor::processInput(int ch) {
 
 void Editor::run() {
     if (lines.empty()) lines = {""};
+    loadKeybindings();
     draw();
     int ch;
     while (true) {
         ch = getch();
-        if (ch == 24) { // Ctrl+X afsluiten
+        if (ch == keymap["exit"]) {
             if (modified) {
                 std::string msg = translations[lang].count("unsaved") ? translations[lang]["unsaved"] : "Niet-opgeslagen wijzigingen! Druk op y om op te slaan, n om te negeren.";
                 mvprintw(0, 0, "%s", msg.c_str());
@@ -286,17 +311,17 @@ void Editor::run() {
                 if (c == 'y') saveFile("");
             }
             break;
-        } else if (ch == 19) { // Ctrl+S opslaan
+        } else if (ch == keymap["save"]) {
             saveFile("");
-        } else if (ch == 6) { // Ctrl+F zoeken
+        } else if (ch == keymap["search"]) {
             searchPrompt();
-        } else if (ch == 8) { // Ctrl+H help
+        } else if (ch == keymap["help"]) {
             helpPrompt();
-        } else if (ch == 18) { // Ctrl+R vervangen
+        } else if (ch == keymap["replace"]) {
             replacePrompt();
-        } else if (ch == 26) { // Ctrl+Z undo
+        } else if (ch == keymap["undo"]) {
             undo();
-        } else if (ch == 25) { // Ctrl+Y redo
+        } else if (ch == keymap["redo"]) {
             redo();
         } else {
             processInput(ch);
