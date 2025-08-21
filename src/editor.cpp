@@ -278,18 +278,18 @@ void Editor::run() {
                 if (c == 'y') saveFile("");
             }
             break;
-        } else if (ch == 15) { // Ctrl+O opslaan
+        } else if (ch == 19) { // Ctrl+S opslaan
             saveFile("");
-        } else if (ch == 23) { // Ctrl+W zoeken
+        } else if (ch == 6) { // Ctrl+F zoeken
             searchPrompt();
+        } else if (ch == 8) { // Ctrl+H help
+            helpPrompt();
         } else if (ch == 18) { // Ctrl+R vervangen
             replacePrompt();
         } else if (ch == 26) { // Ctrl+Z undo
             undo();
         } else if (ch == 25) { // Ctrl+Y redo
             redo();
-        } else if (ch == 7) { // Ctrl+G help
-            helpPrompt();
         } else {
             processInput(ch);
         }
