@@ -24,12 +24,13 @@
 - [x] Waarschuwing bij niet-opgeslagen wijzigingen.
 - [x] Ondersteuning voor UTF-8.
 
+
 ### Bestandsbrowser (Nieuw)
 - [x] Mogelijkheid om een map te openen en bestanden te bekijken.
 - [x] Navigatie tussen mappen en bestanden via toetsenbord.
 - [x] Selecteren van een bestand om te openen in de editor.
 - [x] Weergave van mappenstructuur in een paneel of popup.
-- [ ] Filteren op bestandstype of naam.
+- [x] Filteren op bestandstype of naam.
 
 ---
 
@@ -66,11 +67,14 @@
 
 ---
 
+
 ## 5. Stretch Goals (Optioneel)
 
 - [x] Syntax highlighting.
 - [x] Lijnnummering.
-- [ ] Aanpasbare keybindings.
-- [ ] Plugin-ondersteuning.
+- [x] Aanpasbare keybindings.
+- [x] Plugin-ondersteuning (platformonafhankelijk, event/callback API, CSV/Markdown plugins).
 - [x] Split-screen voor file browser + editor.
 - [x] Thema's (kleurenschema's) en voorkeurenscherm.
+- [x] Unit tests voor pluginlogica.
+- [x] Robuuste foutafhandeling (try/catch, bestandschecks, pluginvalidatie).

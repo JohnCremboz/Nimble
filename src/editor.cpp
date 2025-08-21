@@ -255,6 +255,11 @@ bool Editor::openFile(const std::string& path) {
     filename = path;
     cursorX = cursorY = 0;
     modified = false;
+    // Plugin event: onFileOpen
+    extern PluginManager pluginManager;
+    for (auto& p : pluginManager.plugins) {
+        if (p) p->onFileOpen(path);
+    }
     return true;
 }
 
@@ -267,10 +272,25 @@ bool Editor::saveFile(const std::string& path) {
         file << line << "\n";
     }
     modified = false;
+    // Plugin event: onFileSave
+    extern PluginManager pluginManager;
+    for (auto& p : pluginManager.plugins) {
+        if (p) p->onFileSave(outPath);
+    }
     return true;
+    // Plugin event: onKeyPress
+    extern PluginManager pluginManager;
+    for (auto& p : pluginManager.plugins) {
+        if (p) p->onKeyPress(ch);
+    }
 }
 
 void Editor::draw() {
+    // Plugin event: onEditorDraw
+    extern PluginManager pluginManager;
+    for (auto& p : pluginManager.plugins) {
+        if (p) p->onEditorDraw();
+    }
     clear();
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);
@@ -352,53 +372,68 @@ void Editor::draw() {
                     while (pos < line.size() && line[pos] != '"') {
                         mvaddch(i, x++, line[pos++]);
                     }
-                    if (pos < line.size()) mvaddch(i, x++, line[pos++]);
-                    attroff(COLOR_PAIR(2));
-                    continue;
-                }
-                // Highlight keywords
-                bool matched = false;
-                for (const auto& kw : keywords) {
-                    size_t len = kw.size();
-                    if (line.compare(pos, len, kw) == 0 && (pos == 0 || !isalnum(line[pos-1])) && (pos+len == line.size() || !isalnum(line[pos+len]))) {
-                        attron(COLOR_PAIR(1));
-                        for (size_t k = 0; k < len; ++k) mvaddch(i, x++, line[pos++]);
-                        attroff(COLOR_PAIR(1));
-                        matched = true;
-                        break;
-                    }
-                }
-                if (!matched) {
-                    attron(COLOR_PAIR(3));
-                    mvaddch(i, x++, line[pos++]);
-                    attroff(COLOR_PAIR(3));
-                }
-            }
-        }
-        move(cursorY, cursorX + linenoWidth + 1);
-    }
-    drawStatusBar();
-    refresh();
-}
-
-void Editor::processInput(int ch) {
-    if (ch == KEY_UP) {
-        if (cursorY > 0) cursorY--;
-    } else if (ch == KEY_DOWN) {
-        if (cursorY + 1 < (int)lines.size()) cursorY++;
-    } else if (ch == KEY_LEFT) {
-        if (cursorX > 0) cursorX--;
-    } else if (ch == KEY_RIGHT) {
-        if (cursorX < (int)lines[cursorY].size()) cursorX++;
-    } else if (ch == KEY_NPAGE) { // PageDown
-        cursorY += 10;
-        if (cursorY >= (int)lines.size()) cursorY = lines.size() - 1;
-    } else if (ch == KEY_PPAGE) { // PageUp
-        cursorY -= 10;
-        if (cursorY < 0) cursorY = 0;
-    } else if (ch == 10) { // Enter
-        undoStack.push_back(lines);
-        redoStack.clear();
+                    extern PluginManager pluginManager;
+                    try {
+                        std::string user = getenv("USERNAME") ? getenv("USERNAME") : "user";
+                        std::string pid = std::to_string(GetCurrentProcessId());
+                        if (isMarkdown) {
+                            bool found = false;
+                            for (auto& p : pluginManager.plugins) {
+                                if (p && p->name().find("Markdown") != std::string::npos) {
+                                    found = true;
+                                    std::string tmp = "__nimble_tmp_md_" + user + "_" + pid + ".md";
+                                    std::ofstream f(tmp);
+                                    if (!f.is_open()) { mvprintw(0,0,"[Fout] Kan temp-bestand niet schrijven"); return; }
+                                    for (const auto& l : lines) f << l << "\n";
+                                    f.close();
+                                    fflush(stdout);
+                                    std::string outFile = "__nimble_md_out_" + user + "_" + pid + ".txt";
+                                    FILE* old = freopen(outFile.c_str(), "w", stdout);
+                                    ((MarkdownPlugin*)p.get())->printWithHighlight(tmp);
+                                    fflush(stdout);
+                                    if (old) freopen("CON", "w", stdout);
+                                    std::ifstream fin(outFile);
+                                    if (!fin.is_open()) { mvprintw(0,0,"[Fout] Kan output niet lezen"); remove(tmp.c_str()); return; }
+                                    std::string l; int y=0;
+                                    while (std::getline(fin, l) && y < maxY-1) {
+                                        mvprintw(y++, 0, "%s", l.c_str());
+                                    }
+                                    remove(tmp.c_str());
+                                    remove(outFile.c_str());
+                                    break;
+                                }
+                            }
+                            if (!found) mvprintw(0,0,"[Fout] Geen markdown-plugin geladen");
+                        } else if (isCsv) {
+                            bool found = false;
+                            for (auto& p : pluginManager.plugins) {
+                                if (p && p->name().find("CSV") != std::string::npos) {
+                                    found = true;
+                                    std::string tmp = "__nimble_tmp_csv_" + user + "_" + pid + ".csv";
+                                    std::ofstream f(tmp);
+                                    if (!f.is_open()) { mvprintw(0,0,"[Fout] Kan temp-bestand niet schrijven"); return; }
+                                    for (const auto& l : lines) f << l << "\n";
+                                    f.close();
+                                    fflush(stdout);
+                                    std::string outFile = "__nimble_csv_out_" + user + "_" + pid + ".txt";
+                                    FILE* old = freopen(outFile.c_str(), "w", stdout);
+                                    struct CsvPlugin { void printTable(const std::string&, int, bool, const std::string&, bool); };
+                                    ((CsvPlugin*)p.get())->printTable(tmp, csvSortCol, csvSortAsc, csvFilter, csvShowStats);
+                                    fflush(stdout);
+                                    if (old) freopen("CON", "w", stdout);
+                                    std::ifstream fin(outFile);
+                                    if (!fin.is_open()) { mvprintw(0,0,"[Fout] Kan output niet lezen"); remove(tmp.c_str()); return; }
+                                    std::string l; int y=0;
+                                    while (std::getline(fin, l) && y < maxY-1) {
+                                        mvprintw(y++, 0, "%s", l.c_str());
+                                    }
+                                    remove(tmp.c_str());
+                                    remove(outFile.c_str());
+                                    break;
+                                }
+                            }
+                            if (!found) mvprintw(0,0,"[Fout] Geen CSV-plugin geladen");
+                        } else {
         std::string rest = lines[cursorY].substr(cursorX);
         lines[cursorY] = lines[cursorY].substr(0, cursorX);
         lines.insert(lines.begin() + cursorY + 1, rest);

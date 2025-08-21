@@ -1,6 +1,10 @@
 #include "pluginmanager.h"
 #include <filesystem>
-#include <dlfcn.h> // Voor Linux, voor Windows: gebruik LoadLibrary
+#if defined(_WIN32)
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
 #include <iostream>
 
 void PluginManager::loadPlugins() {
@@ -8,7 +12,20 @@ void PluginManager::loadPlugins() {
     std::string dir = "plugins";
     if (!std::filesystem::exists(dir)) return;
     for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-        if (entry.path().extension() == ".so" || entry.path().extension() == ".dll") {
+        auto ext = entry.path().extension().string();
+#if defined(_WIN32)
+        if (ext == ".dll") {
+            HMODULE handle = LoadLibraryA(entry.path().string().c_str());
+            if (!handle) continue;
+            using create_t = Plugin* (*)();
+            create_t create = (create_t)GetProcAddress(handle, "createPlugin");
+            if (create) {
+                plugins.emplace_back(create());
+                plugins.back()->onLoad();
+            }
+        }
+#else
+        if (ext == ".so" || ext == ".dylib") {
             void* handle = dlopen(entry.path().c_str(), RTLD_LAZY);
             if (!handle) continue;
             using create_t = Plugin* (*)();
@@ -18,6 +35,7 @@ void PluginManager::loadPlugins() {
                 plugins.back()->onLoad();
             }
         }
+#endif
     }
 }
 
