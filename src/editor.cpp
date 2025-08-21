@@ -1,3 +1,78 @@
+// Uitgebreid interactief CSV-menu (Ctrl+M)
+void Editor::csvMenuPrompt() {
+    echo();
+    curs_set(1);
+    int maxY, maxX;
+    getmaxyx(stdscr, maxY, maxX);
+    char buf[64] = {0};
+    // Kolomnamen ophalen via plugin
+    std::vector<std::string> colnames;
+    extern PluginManager pluginManager;
+    for (auto& p : pluginManager.plugins) {
+        if (p->name().find("CSV") != std::string::npos) {
+            std::string tmp = "__nimble_tmp_csv__.csv";
+            std::ofstream f(tmp);
+            for (const auto& l : lines) f << l << "\n";
+            f.close();
+            char delim = ',';
+            std::ifstream file(tmp);
+            std::string header;
+            if (std::getline(file, header)) {
+                std::stringstream ss(header);
+                std::string cell;
+                while (std::getline(ss, cell, ',')) colnames.push_back(cell);
+            }
+            remove(tmp.c_str());
+            break;
+        }
+    }
+    bool done = false;
+    while (!done) {
+        clear();
+        mvprintw(0, 0, "CSV-menu: sorteren/filteren/statistieken. Enter voor volgende optie, q=sluiten, r=reset");
+        mvprintw(1, 0, "Kolommen: ");
+        for (size_t i = 0; i < colnames.size(); ++i) {
+            mvprintw(2, (int)(i*16), "%zu: %s", i, colnames[i].c_str());
+        }
+        mvprintw(4, 0, "Huidige sortering: kolom %d (%s)", csvSortCol, csvSortAsc ? "oplopend" : "aflopend");
+        mvprintw(5, 0, "Huidige filter: '%s'", csvFilter.c_str());
+        mvprintw(6, 0, "Statistieken tonen: %s", csvShowStats ? "ja" : "nee");
+        mvprintw(8, 0, "Opties: s=sorteren, f=filter, t=statistieken, r=reset, q=sluiten, p=preview");
+        int c = getch();
+        if (c == 'q') { done = true; break; }
+        if (c == 'r') { csvSortCol = -1; csvFilter.clear(); csvShowStats = false; continue; }
+        if (c == 's') {
+            mvprintw(10, 0, "Sorteren op kolomnummer: ");
+            getnstr(buf, 63);
+            int col = atoi(buf);
+            if (col >= 0) csvSortCol = col;
+            else csvSortCol = -1;
+            mvprintw(11, 0, "Oplopend (1) of aflopend (0): ");
+            getnstr(buf, 63);
+            csvSortAsc = (buf[0] == '1');
+        }
+        if (c == 'f') {
+            mvprintw(12, 0, "Filter (leeg=geen): ");
+            getnstr(buf, 63);
+            csvFilter = buf;
+        }
+        if (c == 't') {
+            mvprintw(13, 0, "Statistieken tonen? (1/0): ");
+            getnstr(buf, 63);
+            csvShowStats = (buf[0] == '1');
+        }
+        if (c == 'p') {
+            // Live preview
+            draw();
+            mvprintw(maxY-1, 0, "Druk op een toets om terug te keren naar menu");
+            getch();
+        }
+    }
+    noecho();
+    curs_set(0);
+    draw();
+}
+#include "pluginmanager.h"
 #include <fstream>
 #include <sstream>
 #include <map>
@@ -199,56 +274,109 @@ void Editor::draw() {
     clear();
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);
-    int linenoWidth = 1;
-    if (!lines.empty()) {
-        linenoWidth = std::to_string(lines.size()).size();
-    }
-    // Init kleuren voor highlighting
-    start_color();
-    Theme& th = themes[themeIdx];
-    init_pair(1, th.keyword, th.bg); // keywords
-    init_pair(2, th.stringc, th.bg); // strings
-    init_pair(3, th.fg, th.bg); // gewone tekst
-    std::vector<std::string> keywords = {"int","float","double","if","else","for","while","return","void","class","public","private","protected","include","define","namespace","using","std"};
-    for (size_t i = 0; i < lines.size() && i < (size_t)maxY - 1; ++i) {
-        attron(COLOR_PAIR(3));
-        mvprintw(i, 0, "%*zu ", linenoWidth, i + 1);
-        attroff(COLOR_PAIR(3));
-        int x = linenoWidth + 1;
-        std::string line = lines[i];
-        size_t pos = 0;
-        while (pos < line.size()) {
-            // Highlight strings
-            if (line[pos] == '"') {
-                attron(COLOR_PAIR(2));
-                mvaddch(i, x++, line[pos++]);
-                while (pos < line.size() && line[pos] != '"') {
-                    mvaddch(i, x++, line[pos++]);
+    // Markdown/csv-detectie
+    bool isMarkdown = false, isCsv = false;
+    if (!filename.empty() && filename.size() > 3 && filename.substr(filename.size()-3) == ".md") isMarkdown = true;
+    if (!filename.empty() && filename.size() > 4 && filename.substr(filename.size()-4) == ".csv") isCsv = true;
+    extern PluginManager pluginManager;
+    if (isMarkdown) {
+        for (auto& p : pluginManager.plugins) {
+            if (p->name().find("Markdown") != std::string::npos) {
+                std::string tmp = "__nimble_tmp_md__.md";
+                std::ofstream f(tmp);
+                for (const auto& l : lines) f << l << "\n";
+                f.close();
+                fflush(stdout);
+                FILE* old = freopen("__nimble_md_out__.txt", "w", stdout);
+                ((MarkdownPlugin*)p.get())->printWithHighlight(tmp);
+                fflush(stdout);
+                if (old) freopen("CON", "w", stdout);
+                std::ifstream fin("__nimble_md_out__.txt");
+                std::string l; int y=0;
+                while (std::getline(fin, l) && y < maxY-1) {
+                    mvprintw(y++, 0, "%s", l.c_str());
                 }
-                if (pos < line.size()) mvaddch(i, x++, line[pos++]);
-                attroff(COLOR_PAIR(2));
-                continue;
-            }
-            // Highlight keywords
-            bool matched = false;
-            for (const auto& kw : keywords) {
-                size_t len = kw.size();
-                if (line.compare(pos, len, kw) == 0 && (pos == 0 || !isalnum(line[pos-1])) && (pos+len == line.size() || !isalnum(line[pos+len]))) {
-                    attron(COLOR_PAIR(1));
-                    for (size_t k = 0; k < len; ++k) mvaddch(i, x++, line[pos++]);
-                    attroff(COLOR_PAIR(1));
-                    matched = true;
-                    break;
-                }
-            }
-            if (!matched) {
-                attron(COLOR_PAIR(3));
-                mvaddch(i, x++, line[pos++]);
-                attroff(COLOR_PAIR(3));
+                remove(tmp.c_str());
+                remove("__nimble_md_out__.txt");
+                break;
             }
         }
+    } else if (isCsv) {
+        for (auto& p : pluginManager.plugins) {
+            if (p->name().find("CSV") != std::string::npos) {
+                std::string tmp = "__nimble_tmp_csv__.csv";
+                std::ofstream f(tmp);
+                for (const auto& l : lines) f << l << "\n";
+                f.close();
+                fflush(stdout);
+                FILE* old = freopen("__nimble_csv_out__.txt", "w", stdout);
+                // Cast naar juiste type en pretty print
+                struct CsvPlugin { void printTable(const std::string&); };
+                ((CsvPlugin*)p.get())->printTable(tmp);
+                fflush(stdout);
+                if (old) freopen("CON", "w", stdout);
+                std::ifstream fin("__nimble_csv_out__.txt");
+                std::string l; int y=0;
+                while (std::getline(fin, l) && y < maxY-1) {
+                    mvprintw(y++, 0, "%s", l.c_str());
+                }
+                remove(tmp.c_str());
+                remove("__nimble_csv_out__.txt");
+                break;
+            }
+        }
+    } else {
+        int linenoWidth = 1;
+        if (!lines.empty()) {
+            linenoWidth = std::to_string(lines.size()).size();
+        }
+        // Init kleuren voor highlighting
+        start_color();
+        Theme& th = themes[themeIdx];
+        init_pair(1, th.keyword, th.bg); // keywords
+        init_pair(2, th.stringc, th.bg); // strings
+        init_pair(3, th.fg, th.bg); // gewone tekst
+        std::vector<std::string> keywords = {"int","float","double","if","else","for","while","return","void","class","public","private","protected","include","define","namespace","using","std"};
+        for (size_t i = 0; i < lines.size() && i < (size_t)maxY - 1; ++i) {
+            attron(COLOR_PAIR(3));
+            mvprintw(i, 0, "%*zu ", linenoWidth, i + 1);
+            attroff(COLOR_PAIR(3));
+            int x = linenoWidth + 1;
+            std::string line = lines[i];
+            size_t pos = 0;
+            while (pos < line.size()) {
+                // Highlight strings
+                if (line[pos] == '"') {
+                    attron(COLOR_PAIR(2));
+                    mvaddch(i, x++, line[pos++]);
+                    while (pos < line.size() && line[pos] != '"') {
+                        mvaddch(i, x++, line[pos++]);
+                    }
+                    if (pos < line.size()) mvaddch(i, x++, line[pos++]);
+                    attroff(COLOR_PAIR(2));
+                    continue;
+                }
+                // Highlight keywords
+                bool matched = false;
+                for (const auto& kw : keywords) {
+                    size_t len = kw.size();
+                    if (line.compare(pos, len, kw) == 0 && (pos == 0 || !isalnum(line[pos-1])) && (pos+len == line.size() || !isalnum(line[pos+len]))) {
+                        attron(COLOR_PAIR(1));
+                        for (size_t k = 0; k < len; ++k) mvaddch(i, x++, line[pos++]);
+                        attroff(COLOR_PAIR(1));
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    attron(COLOR_PAIR(3));
+                    mvaddch(i, x++, line[pos++]);
+                    attroff(COLOR_PAIR(3));
+                }
+            }
+        }
+        move(cursorY, cursorX + linenoWidth + 1);
     }
-    move(cursorY, cursorX + linenoWidth + 1);
     drawStatusBar();
     refresh();
 }

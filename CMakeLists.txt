@@ -1,3 +1,7 @@
+add_library(markdown_plugin SHARED plugins/markdown_plugin.cpp src/plugin.h)
+set_target_properties(markdown_plugin PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins)
+add_library(csv_plugin SHARED plugins/csv_plugin.cpp src/plugin.h)
+set_target_properties(csv_plugin PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins)
 add_library(example_plugin SHARED plugins/example_plugin.cpp src/plugin.h)
 set_target_properties(example_plugin PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins)
 cmake_minimum_required(VERSION 3.10)
