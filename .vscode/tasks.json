@@ -7,9 +7,16 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
+                "-I",
+                "${workspaceFolder}/src",
+                "-I",
+                "${workspaceFolder}/src/nlohmann",
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
+                ,
+                "-lncurses",
+                "-lstdc++fs"
             ],
             "options": {
                 "cwd": "${fileDirname}"

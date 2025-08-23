@@ -1,6 +1,6 @@
 #include "pluginmanager.h"
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
 using json = nlohmann::json;
 #include <vector>
 #include <utility>

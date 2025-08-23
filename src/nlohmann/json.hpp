@@ -1,7 +1,7 @@
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
 // |  |  |__   |  |  | | | |  version 3.12.0
-// |_____|_____|_____|_|___|  https://github.com/nlohmann/json
+// |_____|_____|_____|_|___|  https://github.com/json
 //
 // SPDX-FileCopyrightText: 2013 - 2025 Niels Lohmann <https://nlohmann.me>
 // SPDX-License-Identifier: MIT
@@ -31,36 +31,36 @@
 #include <utility> // declval, forward, move, pair, swap
 #include <vector> // vector
 
-#include <nlohmann/adl_serializer.hpp>
-#include <nlohmann/byte_container_with_subtype.hpp>
-#include <nlohmann/detail/conversions/from_json.hpp>
-#include <nlohmann/detail/conversions/to_json.hpp>
-#include <nlohmann/detail/exceptions.hpp>
-#include <nlohmann/detail/hash.hpp>
-#include <nlohmann/detail/input/binary_reader.hpp>
-#include <nlohmann/detail/input/input_adapters.hpp>
-#include <nlohmann/detail/input/lexer.hpp>
-#include <nlohmann/detail/input/parser.hpp>
-#include <nlohmann/detail/iterators/internal_iterator.hpp>
-#include <nlohmann/detail/iterators/iter_impl.hpp>
-#include <nlohmann/detail/iterators/iteration_proxy.hpp>
-#include <nlohmann/detail/iterators/json_reverse_iterator.hpp>
-#include <nlohmann/detail/iterators/primitive_iterator.hpp>
-#include <nlohmann/detail/json_custom_base_class.hpp>
-#include <nlohmann/detail/json_pointer.hpp>
-#include <nlohmann/detail/json_ref.hpp>
-#include <nlohmann/detail/macro_scope.hpp>
-#include <nlohmann/detail/string_concat.hpp>
-#include <nlohmann/detail/string_escape.hpp>
-#include <nlohmann/detail/string_utils.hpp>
-#include <nlohmann/detail/meta/cpp_future.hpp>
-#include <nlohmann/detail/meta/type_traits.hpp>
-#include <nlohmann/detail/output/binary_writer.hpp>
-#include <nlohmann/detail/output/output_adapters.hpp>
-#include <nlohmann/detail/output/serializer.hpp>
-#include <nlohmann/detail/value_t.hpp>
-#include <nlohmann/json_fwd.hpp>
-#include <nlohmann/ordered_map.hpp>
+#include "adl_serializer.hpp"
+#include "byte_container_with_subtype.hpp"
+#include "detail/conversions/from_json.hpp"
+#include "detail/conversions/to_json.hpp"
+#include "detail/exceptions.hpp"
+#include "detail/hash.hpp"
+#include "detail/input/binary_reader.hpp"
+#include "detail/input/input_adapters.hpp"
+#include "detail/input/lexer.hpp"
+#include "detail/input/parser.hpp"
+#include "detail/iterators/internal_iterator.hpp"
+#include "detail/iterators/iter_impl.hpp"
+#include "detail/iterators/iteration_proxy.hpp"
+#include "detail/iterators/json_reverse_iterator.hpp"
+#include "detail/iterators/primitive_iterator.hpp"
+#include "detail/json_custom_base_class.hpp"
+#include "detail/json_pointer.hpp"
+#include "detail/json_ref.hpp"
+#include "detail/macro_scope.hpp"
+#include "detail/string_concat.hpp"
+#include "detail/string_escape.hpp"
+#include "detail/string_utils.hpp"
+#include "detail/meta/cpp_future.hpp"
+#include "detail/meta/type_traits.hpp"
+#include "detail/output/binary_writer.hpp"
+#include "detail/output/output_adapters.hpp"
+#include "detail/output/serializer.hpp"
+#include "detail/value_t.hpp"
+#include "json_fwd.hpp"
+#include "ordered_map.hpp"
 
 #if defined(JSON_HAS_CPP_17)
     #if JSON_HAS_STATIC_RTTI
@@ -254,7 +254,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
         result["copyright"] = "(C) 2013-2025 Niels Lohmann";
         result["name"] = "JSON for Modern C++";
-        result["url"] = "https://github.com/nlohmann/json";
+        result["url"] = "https://github.com/json";
         result["version"]["string"] =
             detail::concat(std::to_string(NLOHMANN_JSON_VERSION_MAJOR), '.',
                            std::to_string(NLOHMANN_JSON_VERSION_MINOR), '.',
@@ -758,7 +758,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 #if JSON_DIAGNOSTICS
         if (old_capacity != detail::unknown_size())
         {
-            // see https://github.com/nlohmann/json/issues/2838
+            // see https://github.com/json/issues/2838
             JSON_ASSERT(type() == value_t::array);
             if (JSON_HEDLEY_UNLIKELY(m_data.m_value.array->capacity() != old_capacity))
             {
@@ -769,7 +769,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         // ordered_json uses a vector internally, so pointers could have
-        // been invalidated; see https://github.com/nlohmann/json/issues/2962
+        // been invalidated; see https://github.com/json/issues/2962
 #ifdef JSON_HEDLEY_MSVC_VERSION
 #pragma warning(push )
 #pragma warning(disable : 4127) // ignore warning to replace if with if constexpr
@@ -1830,7 +1830,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     }
 
     // specialization to allow calling get_to with a basic_json value
-    // see https://github.com/nlohmann/json/issues/2175
+    // see https://github.com/json/issues/2175
     template<typename ValueType,
              detail::enable_if_t <
                  detail::is_basic_json<ValueType>::value,
@@ -3288,7 +3288,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
     /// Helper for insertion of an iterator
     /// @note: This uses std::distance to support GCC 4.8,
-    ///        see https://github.com/nlohmann/json/pull/1257
+    ///        see https://github.com/json/pull/1257
     template<typename... Args>
     iterator insert_iterator(const_iterator pos, Args&& ... args) // NOLINT(performance-unnecessary-value-param)
     {
@@ -3604,7 +3604,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @{
 
     // note parentheses around operands are necessary; see
-    // https://github.com/nlohmann/json/issues/1530
+    // https://github.com/json/issues/1530
 #define JSON_IMPLEMENT_OPERATOR(op, null_result, unordered_result, default_result)                       \
     const auto lhs_type = lhs.type();                                                                    \
     const auto rhs_type = rhs.type();                                                                    \
@@ -5257,7 +5257,7 @@ struct hash<nlohmann::NLOHMANN_BASIC_JSON_TPL> // NOLINT(cert-dcl58-cpp)
 
 // specialization for std::less<value_t>
 template<>
-struct less< ::nlohmann::detail::value_t> // do not remove the space after '<', see https://github.com/nlohmann/json/pull/679
+struct less< ::nlohmann::detail::value_t> // do not remove the space after '<', see https://github.com/json/pull/679
 {
     /*!
     @brief compare two value_t enum values
@@ -5301,6 +5301,6 @@ inline void swap(nlohmann::NLOHMANN_BASIC_JSON_TPL& j1, nlohmann::NLOHMANN_BASIC
     #endif
 #endif
 
-#include <nlohmann/detail/macro_unscope.hpp>
+#include <detail/macro_unscope.hpp>
 
 #endif  // INCLUDE_NLOHMANN_JSON_HPP_

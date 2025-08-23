@@ -1,7 +1,7 @@
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
 // |  |  |__   |  |  | | | |  version 3.12.0
-// |_____|_____|_____|_|___|  https://github.com/nlohmann/json
+// |_____|_____|_____|_|___|  https://github.com/json
 //
 // SPDX-FileCopyrightText: 2013 - 2025 Niels Lohmann <https://nlohmann.me>
 // SPDX-License-Identifier: MIT
@@ -15,7 +15,7 @@
 #include <string> // string
 #include <vector> // vector
 
-#include <nlohmann/detail/abi_macros.hpp>
+#include "detail/abi_macros.hpp"
 
 /*!
 @brief namespace for Niels Lohmann
