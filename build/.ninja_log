@@ -1,7 +1,7 @@
 # ninja log v6
-1	125	1755938779763687610	nimble	65ee12fc6c7a2047
-2	2635	1755938756300515131	CMakeFiles/nimble.dir/src/main.cpp.o	ad141de074a76aac
-2	2410	1755938733705010826	CMakeFiles/nimble.dir/src/editor.cpp.o	7ad7848494d888d2
-1	41	1755939474308376784	build.ninja	ad1f467edea3d013
-3	538	1755938756301515138	CMakeFiles/nimble.dir/src/filebrowser.cpp.o	1bb4050f6861b7a5
 538	1047	1755938756836519071	CMakeFiles/nimble.dir/src/pluginmanager.cpp.o	3774987476331a55
+3	538	1755938756301515138	CMakeFiles/nimble.dir/src/filebrowser.cpp.o	1bb4050f6861b7a5
+1	41	1755939803657588245	build.ninja	ad1f467edea3d013
+2	2410	1755938733705010826	CMakeFiles/nimble.dir/src/editor.cpp.o	7ad7848494d888d2
+2	2635	1755938756300515131	CMakeFiles/nimble.dir/src/main.cpp.o	ad141de074a76aac
+1	125	1755938779763687610	nimble	65ee12fc6c7a2047
