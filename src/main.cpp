@@ -1,17 +1,11 @@
 #include "pluginmanager.h"
+#include "editor.h"
 #include <fstream>
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
+#include <ncurses.h>
 using json = nlohmann::json;
 #include <vector>
 #include <utility>
-
-struct Theme {
-    std::string name;
-    short fg;
-    short bg;
-    short keyword;
-    short stringc;
-};
 
 std::vector<Theme> themes = {
     {"Default", COLOR_WHITE, -1, COLOR_CYAN, COLOR_YELLOW},

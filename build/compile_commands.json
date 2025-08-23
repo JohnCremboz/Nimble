@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/home/gertjan/Documenten/Nimble/build",
+  "command": "/usr/bin/c++ -I/home/gertjan/Documenten/Nimble/src -I/home/gertjan/Documenten/Nimble/third_party -I/home/gertjan/Documenten/Nimble/src/nlohmann -g -std=gnu++17 -o CMakeFiles/nimble.dir/src/main.cpp.o -c /home/gertjan/Documenten/Nimble/src/main.cpp",
+  "file": "/home/gertjan/Documenten/Nimble/src/main.cpp",
+  "output": "CMakeFiles/nimble.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/gertjan/Documenten/Nimble/build",
+  "command": "/usr/bin/c++ -I/home/gertjan/Documenten/Nimble/src -I/home/gertjan/Documenten/Nimble/third_party -I/home/gertjan/Documenten/Nimble/src/nlohmann -g -std=gnu++17 -o CMakeFiles/nimble.dir/src/editor.cpp.o -c /home/gertjan/Documenten/Nimble/src/editor.cpp",
+  "file": "/home/gertjan/Documenten/Nimble/src/editor.cpp",
+  "output": "CMakeFiles/nimble.dir/src/editor.cpp.o"
+},
+{
+  "directory": "/home/gertjan/Documenten/Nimble/build",
+  "command": "/usr/bin/c++ -I/home/gertjan/Documenten/Nimble/src -I/home/gertjan/Documenten/Nimble/third_party -I/home/gertjan/Documenten/Nimble/src/nlohmann -g -std=gnu++17 -o CMakeFiles/nimble.dir/src/filebrowser.cpp.o -c /home/gertjan/Documenten/Nimble/src/filebrowser.cpp",
+  "file": "/home/gertjan/Documenten/Nimble/src/filebrowser.cpp",
+  "output": "CMakeFiles/nimble.dir/src/filebrowser.cpp.o"
+},
+{
+  "directory": "/home/gertjan/Documenten/Nimble/build",
+  "command": "/usr/bin/c++ -I/home/gertjan/Documenten/Nimble/src -I/home/gertjan/Documenten/Nimble/third_party -I/home/gertjan/Documenten/Nimble/src/nlohmann -g -std=gnu++17 -o CMakeFiles/nimble.dir/src/pluginmanager.cpp.o -c /home/gertjan/Documenten/Nimble/src/pluginmanager.cpp",
+  "file": "/home/gertjan/Documenten/Nimble/src/pluginmanager.cpp",
+  "output": "CMakeFiles/nimble.dir/src/pluginmanager.cpp.o"
+}
+]

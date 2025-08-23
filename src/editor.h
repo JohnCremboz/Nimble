@@ -1,11 +1,18 @@
+#pragma once
 #include <map>
 #include <string>
-    std::map<std::string, int> keymap;
-    void loadKeybindings(const std::string& path = "keybindings.json");
-
-#pragma once
-#include <string>
 #include <vector>
+
+struct Theme {
+    std::string name;
+    short fg;
+    short bg;
+    short keyword;
+    short stringc;
+};
+
+extern std::map<std::string, int> keymap;
+void loadKeybindings(const std::string& path = "keybindings.json");
 
 class Editor {
 public:
@@ -33,4 +40,11 @@ public:
     void helpPrompt();
     std::string lang;
     int themeIdx = 0;
+    void csvMenuPrompt();
+    
+    // CSV menu state variables
+    int csvSortCol = -1;
+    bool csvSortAsc = true;
+    std::string csvFilter;
+    bool csvShowStats = false;
 };

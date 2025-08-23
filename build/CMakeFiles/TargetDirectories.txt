@@ -1,0 +1,3 @@
+/home/gertjan/Documenten/Nimble/build/CMakeFiles/nimble.dir
+/home/gertjan/Documenten/Nimble/build/CMakeFiles/edit_cache.dir
+/home/gertjan/Documenten/Nimble/build/CMakeFiles/rebuild_cache.dir
