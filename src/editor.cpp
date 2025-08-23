@@ -63,12 +63,28 @@ void Editor::drawStatusBar() {
     std::string fileLabel = translations[lang].count("file") ? translations[lang]["file"] : "Bestand";
     std::string posLabel = translations[lang].count("pos") ? translations[lang]["pos"] : "Pos";
     std::string helpLabel = translations[lang].count("help") ? translations[lang]["help"] : "Ctrl+H Help";
-    
-    mvprintw(maxY-1, 0, "%s: %s | %s: %d,%d | %s", 
+    std::string modMark = modified ? "*" : " ";
+    mvprintw(maxY-1, 0, "%s: %s%s | %s: %d,%d | %s", 
              fileLabel.c_str(), 
              filename.empty() ? "Nieuw" : filename.c_str(),
+             modMark.c_str(),
              posLabel.c_str(), cursorY+1, cursorX+1,
              helpLabel.c_str());
+}
+
+void Editor::drawTitleBar() {
+    int maxY, maxX;
+    getmaxyx(stdscr, maxY, maxX);
+    move(0, 0);
+    clrtoeol();
+    std::string title = " Nimble Editor ";
+    std::string fname = filename.empty() ? "[Nieuw bestand]" : filename;
+    std::string bar = title + "- " + fname;
+    // Truncate if too long
+    if ((int)bar.size() > maxX) bar = bar.substr(0, maxX);
+    attron(A_REVERSE);
+    mvprintw(0, 0, "%s", bar.c_str());
+    attroff(A_REVERSE);
 }
 
 bool Editor::openFile(const std::string& path) {
@@ -107,20 +123,25 @@ bool Editor::saveFile(const std::string& path) {
 void Editor::draw() {
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);
-    
-    // Clear screen
+
     clear();
-    
-    // Draw content
-    for (size_t i = 0; i < lines.size() && i < (size_t)(maxY - 1); ++i) {
-        mvprintw(i, 0, "%s", lines[i].c_str());
+
+    // Titelbalk
+    drawTitleBar();
+
+    // Tekstregels tussen titel- en statusbalk
+    int contentRows = maxY - 2; // 1 voor titel, 1 voor status
+    for (size_t i = 0; i < lines.size() && (int)i < contentRows; ++i) {
+        mvprintw(i + 1, 0, "%s", lines[i].c_str());
     }
-    
-    // Draw status bar
+
+    // Statusbalk
     drawStatusBar();
-    
-    // Position cursor
-    move(cursorY, cursorX);
+
+    // Cursorpositie binnen content
+    int cy = cursorY + 1;
+    if (cy >= maxY - 1) cy = maxY - 2;
+    move(cy, cursorX);
     refresh();
 }
 

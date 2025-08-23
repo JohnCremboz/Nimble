@@ -34,6 +34,7 @@ public:
     std::vector<std::vector<std::string>> redoStack;
     void draw();
     void drawStatusBar();
+    void drawTitleBar();
     void processInput(int ch);
     void searchPrompt();
     void replacePrompt();
